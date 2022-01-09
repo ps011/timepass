@@ -26,8 +26,6 @@ function setAge(e: Event) {
 }
 
 function calculateAge(value: number): string {
-  let days = 0;
-
   const current = new Date();
   const currentDate = current.getDate();
   const currentMonth = current.getMonth();
@@ -37,7 +35,7 @@ function calculateAge(value: number): string {
   const date = formattedDate.getDate();
   const year = formattedDate.getFullYear();
 
-  let numberOfYears = getNumberOfYears(
+  const numberOfYears = getNumberOfYears(
     date,
     month,
     year,
@@ -46,15 +44,24 @@ function calculateAge(value: number): string {
     currentYear
   );
 
-  let numberOfMonths = getNumberOfMonths(
+  const numberOfMonths = getNumberOfMonths(
     date,
     month,
     currentDate,
     currentMonth
   );
-  let numberOfDays = getNumberOfDays(date, currentDate, currentMonth);
 
-  return `${numberOfYears} Years, ${numberOfMonths} Months, ${numberOfDays} Days`;
+  const numberOfDays = getNumberOfDays(date, currentDate, currentMonth);
+
+  const totalDays = getTotalNumberOfDays(
+    numberOfDays,
+    numberOfMonths,
+    numberOfYears,
+    year,
+    month
+  );
+
+  return `${numberOfYears} Years, ${numberOfMonths} Months, ${numberOfDays} Days <br/> Total Days: ${totalDays}`;
 }
 
 function isLeapYear(year: number) {
@@ -84,6 +91,9 @@ function getNumberOfMonths(
   currentDate: number,
   currentMonth: number
 ): number {
+  if (month === currentMonth) {
+    return 0;
+  }
   if (currentDate >= date) {
     return 12 - month + currentMonth;
   }
@@ -104,4 +114,18 @@ function getNumberOfDays(
   );
 }
 
-console.log(calculateAge(813016800000));
+function getTotalNumberOfDays(
+  days: number,
+  months: number,
+  years: number,
+  year: number,
+  month: number
+): number {
+  for (let i = year; i < year + years; i++) {
+    days += isLeapYear(i) ? 366 : 365;
+  }
+  for (let i = month; i < month + months; i++) {
+    days += i > 11 ? monthMap[i - 12] : monthMap[i];
+  }
+  return days;
+}
