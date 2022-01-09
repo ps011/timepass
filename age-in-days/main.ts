@@ -1,7 +1,7 @@
 const age = document.querySelector(".age");
 const date = document.querySelector(".date");
 
-const monthMap: Record<number, number> = {
+const monthMap: { [index: number]: number } = {
   0: 31,
   1: 28,
   2: 31,
@@ -24,7 +24,8 @@ function setAge(e: Event) {
       "" + calculateAge((target as HTMLInputElement).valueAsNumber);
   }
 }
-function calculateAge(value: number) {
+
+function calculateAge(value: number): string {
   let days = 0;
 
   const current = new Date();
@@ -35,37 +36,72 @@ function calculateAge(value: number) {
   const month = formattedDate.getMonth();
   const date = formattedDate.getDate();
   const year = formattedDate.getFullYear();
-  const includeCurrentYear =
-    currentMonth > month && currentDate > date && currentYear > year;
-  const conditionYear = includeCurrentYear ? currentYear : currentYear - 1;
-  for (let i = year; i <= conditionYear; i++) {
-    days += 365;
-    if (isLeapYear(year)) {
-      days += 1;
-    }
-  }
 
-  if (includeCurrentYear) {
-    for (let i = month; i < currentMonth; i++) {
-      days += monthMap[i];
-    }
-    days -= monthMap[month] - date;
-    days += currentDate;
-  } else {
-    //FIXME
-    for (let i = month; i < 12; i++) {
-      days += monthMap[i];
-    }
-    for (let i = 0; i < currentMonth; i++) {
-      days += monthMap[i];
-    }
-    days += date;
-  }
-  return days;
+  let numberOfYears = getNumberOfYears(
+    date,
+    month,
+    year,
+    currentDate,
+    currentMonth,
+    currentYear
+  );
+
+  let numberOfMonths = getNumberOfMonths(
+    date,
+    month,
+    currentDate,
+    currentMonth
+  );
+  let numberOfDays = getNumberOfDays(date, currentDate, currentMonth);
+
+  return `${numberOfYears} Years, ${numberOfMonths} Months, ${numberOfDays} Days`;
 }
 
 function isLeapYear(year: number) {
   return year % 4 === 0 ? (year % 100 !== 0 ? true : year % 400 === 0) : false;
 }
 
-calculateAge(1636848525891);
+function getNumberOfYears(
+  date: number,
+  month: number,
+  year: number,
+  currentDate: number,
+  currentMonth: number,
+  currentYear: number
+): number {
+  if (currentMonth < month) {
+    return currentYear - year - 1;
+  } else if (currentMonth === month) {
+    return currentDate >= date ? currentYear - year : currentYear - year - 1;
+  } else {
+    return currentYear - year;
+  }
+}
+
+function getNumberOfMonths(
+  date: number,
+  month: number,
+  currentDate: number,
+  currentMonth: number
+): number {
+  if (currentDate >= date) {
+    return 12 - month + currentMonth;
+  }
+  return 12 - month + currentMonth - 1;
+}
+
+function getNumberOfDays(
+  date: number,
+  currentDate: number,
+  currentMonth: number
+): number {
+  if (currentDate >= date) {
+    return currentDate - date;
+  }
+  return (
+    currentDate +
+    (monthMap[currentMonth - 1 < 0 ? 11 : currentMonth - 1] - date)
+  );
+}
+
+console.log(calculateAge(813016800000));
