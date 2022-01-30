@@ -1,5 +1,29 @@
-const age = document.querySelector(".age");
-const date = document.querySelector(".date");
+const yearElement = document.querySelector("#year");
+const monthElement = document.querySelector("#month");
+const dayElement = document.querySelector("#days");
+const hourElement = document.querySelector("#hours");
+const minuteElement = document.querySelector("#minutes");
+const secondsElement = document.querySelector("#seconds");
+const totalElement = document.querySelector("#total");
+const dateElement = document.querySelector(".date");
+const cards = document.querySelectorAll(".cards");
+
+const current = new Date();
+const currentDate = current.getDate();
+const currentMonth = current.getMonth();
+const currentYear = current.getFullYear();
+
+let formattedDate;
+let month = 0;
+let date = 0;
+let year = 0;
+
+let years,
+  months,
+  days,
+  hours,
+  minutes,
+  seconds = 0;
 
 const monthMap: { [index: number]: number } = {
   0: 31,
@@ -15,67 +39,62 @@ const monthMap: { [index: number]: number } = {
   10: 30,
   11: 31,
 };
-date!.addEventListener("input", setAge);
 
-function setAge(e: Event) {
-  const { target } = e;
-  if (target) {
-    age!.innerHTML =
-      "" + calculateAge((target as HTMLInputElement).valueAsNumber);
-  }
+function setIntervaledSetValues(e: Event) {
+  setInterval(() => {
+    setValues(e);
+  }, 1000);
+  cards[0]!.classList.add("show");
+  cards[1]!.classList.add("show");
 }
 
-function calculateAge(value: number): string {
-  const current = new Date();
-  const currentDate = current.getDate();
-  const currentMonth = current.getMonth();
-  const currentYear = current.getFullYear();
-  const formattedDate = new Date(value);
-  const month = formattedDate.getMonth();
-  const date = formattedDate.getDate();
-  const year = formattedDate.getFullYear();
+dateElement!.addEventListener("input", setIntervaledSetValues);
 
-  const numberOfYears = getNumberOfYears(
-    date,
-    month,
-    year,
-    currentDate,
-    currentMonth,
-    currentYear
-  );
+function setValues(e: Event) {
+  const { target } = e;
+  if (target) {
+    formattedDate = new Date((target as HTMLInputElement).valueAsNumber);
+    month = formattedDate.getMonth();
+    date = formattedDate.getDate();
+    year = formattedDate.getFullYear();
 
-  const numberOfMonths = getNumberOfMonths(
-    date,
-    month,
-    currentDate,
-    currentMonth
-  );
+    const numberOfYears = getNumberOfYears();
+    const numberOfMonths = getNumberOfMonths();
+    const numberOfDays = getNumberOfDays();
 
-  const numberOfDays = getNumberOfDays(date, currentDate, currentMonth);
+    const totalMonths = getTotalNumberOfMonths(numberOfMonths, numberOfYears);
+    const totalDays = getTotalNumberOfDays(
+      numberOfDays,
+      numberOfMonths,
+      numberOfYears
+    );
+    const totalHours = getTotalNumberOfHours(totalDays, new Date().getHours());
+    const totalMinutes = getTotalNumberOfMinutes(
+      totalHours,
+      new Date().getMinutes()
+    );
+    const totalSeconds = getTotalNumberOfSeconds(
+      totalMinutes,
+      new Date().getSeconds()
+    );
 
-  const totalDays = getTotalNumberOfDays(
-    numberOfDays,
-    numberOfMonths,
-    numberOfYears,
-    year,
-    month
-  );
-
-  return `${numberOfYears} Years, ${numberOfMonths} Months, ${numberOfDays} Days <br/> Total Days: ${totalDays}`;
+    totalElement!.innerHTML =
+      "" +
+      `${numberOfYears} Years, ${numberOfMonths} Months, ${numberOfDays} Days`;
+    yearElement!.innerHTML = "" + numberOfYears;
+    monthElement!.innerHTML = "" + totalMonths;
+    dayElement!.innerHTML = "" + totalDays;
+    hourElement!.innerHTML = "" + totalHours;
+    minuteElement!.innerHTML = "" + totalMinutes;
+    secondsElement!.innerHTML = "" + totalSeconds;
+  }
 }
 
 function isLeapYear(year: number) {
   return year % 4 === 0 ? (year % 100 !== 0 ? true : year % 400 === 0) : false;
 }
 
-function getNumberOfYears(
-  date: number,
-  month: number,
-  year: number,
-  currentDate: number,
-  currentMonth: number,
-  currentYear: number
-): number {
+function getNumberOfYears(): number {
   if (currentMonth < month) {
     return currentYear - year - 1;
   } else if (currentMonth === month) {
@@ -85,12 +104,7 @@ function getNumberOfYears(
   }
 }
 
-function getNumberOfMonths(
-  date: number,
-  month: number,
-  currentDate: number,
-  currentMonth: number
-): number {
+function getNumberOfMonths(): number {
   if (month === currentMonth) {
     return 0;
   }
@@ -100,11 +114,7 @@ function getNumberOfMonths(
   return 12 - month + currentMonth - 1;
 }
 
-function getNumberOfDays(
-  date: number,
-  currentDate: number,
-  currentMonth: number
-): number {
+function getNumberOfDays(): number {
   if (currentDate >= date) {
     return currentDate - date;
   }
@@ -114,12 +124,14 @@ function getNumberOfDays(
   );
 }
 
+function getTotalNumberOfMonths(months: number, years: number): number {
+  return years * 12 + months;
+}
+
 function getTotalNumberOfDays(
   days: number,
   months: number,
-  years: number,
-  year: number,
-  month: number
+  years: number
 ): number {
   for (let i = year; i < year + years; i++) {
     days += isLeapYear(i) ? 366 : 365;
@@ -128,4 +140,16 @@ function getTotalNumberOfDays(
     days += i > 11 ? monthMap[i - 12] : monthMap[i];
   }
   return days;
+}
+
+function getTotalNumberOfHours(days: number, todayHours: number) {
+  return days * 24 + todayHours;
+}
+
+function getTotalNumberOfMinutes(hours: number, todayMinutes: number) {
+  return hours * 60 + todayMinutes;
+}
+
+function getTotalNumberOfSeconds(minutes: number, todaySeconds: number) {
+  return minutes * 60 + todaySeconds;
 }

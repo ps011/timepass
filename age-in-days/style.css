@@ -1,0 +1,59 @@
+body {
+  font-family: "Gill Sans", sans-serif;
+  background: #1a1b11;
+}
+
+.cards {
+  display: none;
+  flex-wrap: wrap;
+}
+
+.cards.show {
+  display: flex;
+}
+
+.title {
+  text-align: center;
+  color: white;
+}
+
+.date {
+  max-width: 300px;
+  min-width: 200px;
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 8px;
+  font-family: "Gill Sans", sans-serif;
+  font-size: 20px;
+  display: block;
+  margin: 32px auto;
+}
+
+.card {
+  min-width: 200px;
+  background: gray;
+  padding: 16px;
+  border-radius: 10px;
+  display: block;
+  margin: 8px;
+  flex: 1;
+}
+
+.card .age {
+  text-align: center;
+}
+
+.card span {
+  float: right;
+  background: yellow;
+  padding: 4px;
+  margin-right: -16px;
+  margin-bottom: -16px;
+  border-radius: 0 0 10px 0;
+  font-size: 20px;
+}
+
+.total {
+  text-align: center;
+  color: white;
+}
