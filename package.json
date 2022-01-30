@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile:age-in-days": "tsc age-in-days/main.ts",
-    "compile:family-tree": "tsc family-tree/main.ts"
+    "compile:family-tree": "tsc family-tree/main.ts",
+    "compile:all": "tsc"
   },
   "repository": {
     "type": "git",
